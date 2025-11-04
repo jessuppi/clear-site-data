@@ -17,6 +17,11 @@ async function getActiveTab() {
   return null;
 }
 
+// set persistent badge background once on install or update
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.action.setBadgeBackgroundColor({ color: "#333" });
+});
+
 // check if cookie domain matches current host or any subdomain
 function hostMatches(hostname, cookieDomain) {
   // guard against missing or invalid data
@@ -119,7 +124,8 @@ chrome.action.onClicked.addListener(async () => {
     const count = await removeCookiesForHost(hostname);
     await removeOriginCookies(origin);
 
-    await flashBadge(count > 0 ? String(Math.min(count, 999)) : "OK");
+    const label = count > 999 ? "999+" : String(count);
+    await flashBadge(count > 0 ? label : "OK");
     await flashIcon();
   } finally {
     isRunning = false;
