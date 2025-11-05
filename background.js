@@ -36,8 +36,8 @@ async function removeSiteData(origin) {
         fileSystems: true,
 
         // caches and workers
-        cache: true, // http cache
-        cacheStorage: true, // cache api
+        cache: true,
+        cacheStorage: true,
         serviceWorkers: true,
 
         // legacy plugin storage (kept for completeness)
@@ -72,13 +72,39 @@ async function flashIcon(ms = 800) {
 // prevent overlapping runs on rapid clicks
 let isRunning = false;
 
-// handle click on extension icon
-chrome.action.onClicked.addListener(async () => {
-  // skip if action is already running
-  if (isRunning) return;
-  isRunning = true;
+// manage two-click confirmation
+let confirmArmed = false;
+let confirmTimer = null;
 
-  // disable icon to prevent multiple clicks
+// handle click on extension icon (two-click confirm)
+chrome.action.onClicked.addListener(async () => {
+  // ignore if a clear is already running
+  if (isRunning) return;
+
+  // first click: arm confirmation
+  if (!confirmArmed) {
+    confirmArmed = true;
+    await chrome.action.setBadgeText({ text: "OK?" });
+
+    // auto-cancel after 3 seconds
+    confirmTimer = setTimeout(async () => {
+      confirmArmed = false;
+      confirmTimer = null;
+      await chrome.action.setBadgeText({ text: "" });
+    }, 3000);
+
+    return;
+  }
+
+  // second click within window: proceed and reset confirm state
+  confirmArmed = false;
+  if (confirmTimer) {
+    clearTimeout(confirmTimer);
+    confirmTimer = null;
+  }
+
+  // disable icon to prevent multiple clicks during clear
+  isRunning = true;
   chrome.action.disable();
 
   try {
@@ -102,4 +128,3 @@ chrome.action.onClicked.addListener(async () => {
     isRunning = false;
   }
 });
-
