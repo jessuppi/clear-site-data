@@ -1,10 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "Clear Cookies",
+  "name": "Clear Site Data",
   "version": "1.0.0",
-  "description": "Easily clear cookies from the current site with a single click using this simple tool to reset login sessions and disable tracking.",
+  "description": "Quickly clear all data for the current site with a single click using this simple tool to reset sessions and remove tracking storage.",
   "permissions": [
-    "cookies",
     "tabs",
     "browsingData"
   ],
@@ -12,7 +11,7 @@
     "<all_urls>"
   ],
   "action": {
-    "default_title": "Clear Cookies"
+    "default_title": "Clear Site Data"
   },
   "background": {
     "service_worker": "background.js"
