@@ -74,25 +74,32 @@ let isRunning = false;
 
 // handle click on extension icon
 chrome.action.onClicked.addListener(async () => {
-  if (isRunning) {
-    await flashBadge("...");
-    return;
-  }
+  // skip if action is already running
+  if (isRunning) return;
   isRunning = true;
 
+  // disable icon to prevent multiple clicks
+  chrome.action.disable();
+
   try {
+    // get the active browser tab
     const active = await getActiveTab();
     if (!active) {
       await flashBadge("ERR");
       return;
     }
 
+    // clear all site data for the active origin
     const { url } = active;
     await removeSiteData(url.origin);
 
+    // show feedback and flash the icon
     await flashBadge("OK");
     await flashIcon();
   } finally {
+    // re-enable icon after completion
+    chrome.action.enable();
     isRunning = false;
   }
 });
+
