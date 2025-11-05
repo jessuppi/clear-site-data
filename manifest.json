@@ -4,11 +4,8 @@
   "version": "1.0.0",
   "description": "Quickly clear all data for the current site with a single click using this simple tool to reset sessions and remove tracking storage.",
   "permissions": [
-    "tabs",
-    "browsingData"
-  ],
-  "host_permissions": [
-    "<all_urls>"
+    "browsingData",
+    "activeTab"
   ],
   "action": {
     "default_title": "Clear Site Data"
