@@ -125,11 +125,11 @@ chrome.action.onClicked.addListener(async () => {
     // second click on the same tab and origin: proceed
     await cancelConfirmation();
 
-    // disable icon to prevent multiple clicks during clear
+    // disable the confirmed tab to prevent duplicate clears
     isRunning = true;
 
     try {
-      await chrome.action.disable();
+      await chrome.action.disable(tabId);
 
       // clear all site data for the active origin
       await removeSiteData(origin);
@@ -140,8 +140,8 @@ chrome.action.onClicked.addListener(async () => {
       // show failure if chrome could not clear site data
       await flashBadge("ERR", 1200, tabId);
     } finally {
-      // re-enable icon after completion
-      await chrome.action.enable().catch(() => {});
+      // re-enable the confirmed tab after completion
+      await chrome.action.enable(tabId).catch(() => {});
       isRunning = false;
     }
   } catch {
