@@ -17,9 +17,13 @@ async function getActiveTab() {
   return null;
 }
 
+const BADGE_COLOR_DEFAULT = "#424242";
+const BADGE_COLOR_SUCCESS = "#2E7D32";
+const BADGE_COLOR_ERROR = "#C62828";
+
 // set persistent badge background once on install or update
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.action.setBadgeBackgroundColor({ color: "#424242" });
+  chrome.action.setBadgeBackgroundColor({ color: BADGE_COLOR_DEFAULT });
 });
 
 // clear all persistent site data for this origin
@@ -60,6 +64,13 @@ function clearBadgeTimer(tabId) {
   badgeTimers.delete(key);
 }
 
+// set badge background color for one tab when possible
+async function setBadgeColor(color, tabId) {
+  const details = { color };
+  if (Number.isInteger(tabId)) details.tabId = tabId;
+  await chrome.action.setBadgeBackgroundColor(details);
+}
+
 // set badge text for one tab when possible
 async function setBadgeText(text, tabId) {
   const details = { text };
@@ -68,8 +79,9 @@ async function setBadgeText(text, tabId) {
 }
 
 // show badge text without letting older timers clear it
-async function showBadge(text, tabId) {
+async function showBadge(text, tabId, color = BADGE_COLOR_DEFAULT) {
   clearBadgeTimer(tabId);
+  await setBadgeColor(color, tabId);
   await setBadgeText(text, tabId);
 }
 
@@ -77,18 +89,20 @@ async function showBadge(text, tabId) {
 async function clearBadge(tabId) {
   clearBadgeTimer(tabId);
   await setBadgeText("", tabId);
+  await setBadgeColor(BADGE_COLOR_DEFAULT, tabId);
 }
 
 // show a short badge message on the extension icon
-async function flashBadge(text, ms = 1200, tabId) {
+async function flashBadge(text, ms = 1200, tabId, color = BADGE_COLOR_DEFAULT) {
   // display temporary badge text for quick feedback
   try {
-    await showBadge(text, tabId);
+    await showBadge(text, tabId, color);
 
     const key = getBadgeTimerKey(tabId);
     const timer = setTimeout(() => {
       badgeTimers.delete(key);
       setBadgeText("", tabId).catch(() => {});
+      setBadgeColor(BADGE_COLOR_DEFAULT, tabId).catch(() => {});
     }, ms);
 
     badgeTimers.set(key, timer);
@@ -141,7 +155,7 @@ chrome.action.onClicked.addListener(async () => {
     const active = await getActiveTab();
     if (!active) {
       await cancelConfirmation();
-      await flashBadge("ERR");
+      await flashBadge("ERR", 1200, undefined, BADGE_COLOR_ERROR);
       return;
     }
 
@@ -173,10 +187,10 @@ chrome.action.onClicked.addListener(async () => {
       await removeSiteData(origin);
 
       // show badge feedback after clearing
-      await flashBadge("OK", 1200, tabId);
+      await flashBadge("OK", 1200, tabId, BADGE_COLOR_SUCCESS);
     } catch {
       // show failure if chrome could not clear site data
-      await flashBadge("ERR", 1200, tabId);
+      await flashBadge("ERR", 1200, tabId, BADGE_COLOR_ERROR);
     } finally {
       // re-enable the confirmed tab after completion
       await chrome.action.enable(tabId).catch(() => {});
@@ -185,6 +199,6 @@ chrome.action.onClicked.addListener(async () => {
   } catch {
     // reset state and show failure if an unexpected click error occurs
     await cancelConfirmation();
-    await flashBadge("ERR");
+    await flashBadge("ERR", 1200, undefined, BADGE_COLOR_ERROR);
   }
 });
