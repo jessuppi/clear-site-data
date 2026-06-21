@@ -125,10 +125,12 @@ const runningTabs = new Set();
 // track the tab and origin waiting for confirmation
 let armedClear = null;
 let confirmTimer = null;
+let confirmationId = 0;
 
 // cancel the pending confirmation state
 async function cancelConfirmation() {
   const tabId = armedClear?.tabId;
+  confirmationId += 1;
 
   if (confirmTimer) {
     clearTimeout(confirmTimer);
@@ -146,20 +148,41 @@ async function cancelConfirmation() {
   }
 }
 
+// show confirmation badge only if this confirmation is still current
+async function showConfirmationBadge(tabId, id) {
+  clearBadgeTimer(tabId);
+
+  if (armedClear?.id !== id) return;
+  await setBadgeColor(BADGE_COLOR_DEFAULT, tabId);
+
+  if (armedClear?.id !== id) return;
+  await setBadgeText("OK?", tabId);
+}
+
 // arm confirmation for the clicked tab and origin
 async function armConfirmation(active) {
   const tabId = active.tab.id;
   const origin = active.url.origin;
+  const id = confirmationId + 1;
 
-  await showBadge("OK?", tabId);
-  armedClear = { tabId, origin };
+  if (confirmTimer) {
+    clearTimeout(confirmTimer);
+    confirmTimer = null;
+  }
+
+  confirmationId = id;
+  armedClear = { tabId, origin, id };
 
   // auto-cancel after 3 seconds
   confirmTimer = setTimeout(() => {
+    if (armedClear?.id !== id) return;
+
     cancelConfirmation().catch((error) => {
       logWarning("failed to cancel confirmation", error);
     });
   }, 3000);
+
+  await showConfirmationBadge(tabId, id);
 }
 
 // handle click on extension icon
