@@ -42,9 +42,13 @@ Badge cleanup is also tracked per tab, so newer confirmation or result badges ar
 
 ## Click guarding
 
-The two-click confirmation is bound to the tab and site origin from the first click. If you switch tabs or sites before confirming, the old confirmation is canceled and the new active site must be confirmed separately.
+The two-click confirmation is bound to the tab and site origin from the first click. A pending confirmation is single-site at a time. If you switch tabs or sites before confirming, the previous confirmation is canceled and the new active site must be confirmed separately.
 
-During clearing, the extension action is temporarily disabled only for the confirmed tab to prevent duplicate clears while keeping the behavior tied to that tab. Other tabs can still be confirmed and cleared separately.
+During clearing, the extension action is temporarily disabled only for the confirmed tab to prevent duplicate clears while keeping the behavior tied to that tab. Other tabs can still be confirmed and cleared separately after starting a new confirmation.
+
+## Privacy
+
+Clear Site Data does not collect, store, transmit, sell, or share user data. All clearing happens locally through Chrome's built-in `chrome.browsingData.remove()` API after the user clicks the extension.
 
 ## Changelog
 
@@ -53,6 +57,7 @@ During clearing, the extension action is temporarily disabled only for the confi
 - Added Manifest V3 support for Chrome.
 - Added two-click confirmation before clearing site data.
 - Binds confirmation to the original tab and site origin to avoid clearing a different site after switching tabs.
+- Documents that pending confirmation is single-site at a time.
 - Uses the tab provided by Chrome for the extension click instead of querying the active tab again.
 - Claims the confirmed tab before async cleanup to avoid duplicate clear races.
 - Tracks running clears per tab to block duplicate clears without blocking unrelated tabs.
@@ -66,5 +71,6 @@ During clearing, the extension action is temporarily disabled only for the confi
 - Uses Chrome's built-in `chrome.browsingData.remove()` API.
 - Uses minimal extension permissions with `browsingData` and `activeTab`.
 - Uses one extension icon with badge-only feedback after confirmation, success, or unsupported pages.
+- Does not collect, store, transmit, sell, or share user data.
 - Shows `ERR` when clearing is unsupported or fails.
 - Supports split incognito mode.
