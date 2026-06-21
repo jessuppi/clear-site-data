@@ -3,7 +3,7 @@
   "name": "Clear Site Data",
   "version": "1.0.0",
   "minimum_chrome_version": "96",
-  "description": "Clear data for the current site with a two-click confirmation to reset sessions and remove local tracking storage.",
+  "description": "Clear cookies, cache, and storage for the current site with a two-click confirmation.",
   "permissions": [
     "browsingData",
     "activeTab"
