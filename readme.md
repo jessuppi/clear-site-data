@@ -54,10 +54,12 @@ During clearing, the extension action is temporarily disabled only for the confi
 - Added two-click confirmation before clearing site data.
 - Binds confirmation to the original tab and site origin to avoid clearing a different site after switching tabs.
 - Uses the tab provided by Chrome for the extension click instead of querying the active tab again.
+- Claims the confirmed tab before async cleanup to avoid duplicate clear races.
 - Tracks running clears per tab to block duplicate clears without blocking unrelated tabs.
 - Prevents older badge timers from clearing newer confirmation or result badges.
 - Uses neutral, green, and red badge colors for confirmation, success, and errors.
 - Shows `CLR` while Chrome processes the clearing request.
+- Logs non-fatal extension errors to the service worker console for debugging.
 - Temporarily disables the extension action only for the confirmed tab during clearing.
 - Clears cookies for the broader registrable domain where Chrome's cookie scoping applies.
 - Clears local storage, IndexedDB, WebSQL, file systems, cache, CacheStorage, and service workers for the active site origin.
