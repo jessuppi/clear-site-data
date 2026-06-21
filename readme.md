@@ -18,13 +18,13 @@ It is designed to clear current-site data types that Chrome supports through ori
 - CacheStorage
 - Service workers
 - Site cache
-- File system storage
-- WebSQL
-- Other old or deprecated site storage types where Chrome still supports origin-scoped removal
+- WebSQL and file system storage where still supported by Chrome
 
 These local data types are commonly used for logins, sessions, cached files, offline app data, test states, and tracking identifiers. Clearing them can help reset logins, remove local site identifiers, clear broken test states, and show how a site behaves as a fresh visitor.
 
-Clear Site Data does not try to clear unrelated browser-wide data such as saved passwords, download history, browsing history, autofill form data, or extension data.
+Clear Site Data does not currently clear `sessionStorage`, because Chrome's `browsingData` API does not expose it as an origin-scoped removal type. Support for clearing `sessionStorage` may be added later if it can be done cleanly without making the extension feel invasive.
+
+It also does not clear browser-wide data such as saved passwords, browsing history, download history, autofill data, extension data, or fingerprinting/server-side identifiers.
 
 This extension is not a VPN, anonymity tool, anti-fingerprinting system, or guarantee against all tracking. Sites may still recognize visitors through accounts, IP addresses, browser fingerprinting, server-side records, or other signals. The goal is simple local site cleanup, not identity hiding.
 
