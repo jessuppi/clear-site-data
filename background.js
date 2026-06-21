@@ -42,6 +42,24 @@ async function removeSiteData(origin) {
   );
 }
 
+// track temporary badge cleanup by tab
+const badgeTimers = new Map();
+
+// get the badge timer key for a tab or global fallback
+function getBadgeTimerKey(tabId) {
+  return Number.isInteger(tabId) ? tabId : "global";
+}
+
+// stop pending badge cleanup for this tab
+function clearBadgeTimer(tabId) {
+  const key = getBadgeTimerKey(tabId);
+  const timer = badgeTimers.get(key);
+  if (!timer) return;
+
+  clearTimeout(timer);
+  badgeTimers.delete(key);
+}
+
 // set badge text for one tab when possible
 async function setBadgeText(text, tabId) {
   const details = { text };
@@ -49,12 +67,31 @@ async function setBadgeText(text, tabId) {
   await chrome.action.setBadgeText(details);
 }
 
+// show badge text without letting older timers clear it
+async function showBadge(text, tabId) {
+  clearBadgeTimer(tabId);
+  await setBadgeText(text, tabId);
+}
+
+// clear badge text and pending cleanup for one tab
+async function clearBadge(tabId) {
+  clearBadgeTimer(tabId);
+  await setBadgeText("", tabId);
+}
+
 // show a short badge message on the extension icon
 async function flashBadge(text, ms = 1200, tabId) {
   // display temporary badge text for quick feedback
   try {
-    await setBadgeText(text, tabId);
-    setTimeout(() => setBadgeText("", tabId).catch(() => {}), ms);
+    await showBadge(text, tabId);
+
+    const key = getBadgeTimerKey(tabId);
+    const timer = setTimeout(() => {
+      badgeTimers.delete(key);
+      setBadgeText("", tabId).catch(() => {});
+    }, ms);
+
+    badgeTimers.set(key, timer);
   } catch {}
 }
 
@@ -78,7 +115,7 @@ async function cancelConfirmation() {
 
   if (Number.isInteger(tabId)) {
     try {
-      await setBadgeText("", tabId);
+      await clearBadge(tabId);
     } catch {}
   }
 }
@@ -88,7 +125,7 @@ async function armConfirmation(active) {
   const tabId = active.tab.id;
   const origin = active.url.origin;
 
-  await setBadgeText("OK?", tabId);
+  await showBadge("OK?", tabId);
   armedClear = { tabId, origin };
 
   // auto-cancel after 3 seconds
