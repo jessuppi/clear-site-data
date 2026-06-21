@@ -4,7 +4,7 @@ Clear Site Data is a small Chrome extension for quickly resetting the current si
 
 It is designed for people who need a clean local session without digging through Chrome settings, including SEO testing, web development, QA checks, forum administration, support workflows, and everyday privacy cleanup.
 
-Click the extension icon once to show `OK?`, then click it again within 3 seconds to clear data for the active site. The extension then shows `OK` on the icon badge.
+Click the extension icon once to show `OK?`, then click it again within 3 seconds to clear data for the active site. The extension shows `CLR` while clearing, then shows `OK` on the icon badge after Chrome reports that clearing completed. The current tab may need to be reloaded after clearing so the page reads the new clean state.
 
 ## What it clears
 
@@ -34,7 +34,7 @@ This extension is not a VPN, anonymity tool, anti-fingerprinting system, or guar
 
 ## Error handling
 
-Clear Site Data shows a green `OK` badge only after Chrome reports that the clearing request completed. If the active page is unsupported or Chrome cannot complete the clearing request, the extension shows a red `ERR` badge instead.
+Clear Site Data shows a neutral `CLR` badge while Chrome is processing the clearing request, then shows a green `OK` badge only after Chrome reports that the request completed. If the active page is unsupported or Chrome cannot complete the clearing request, the extension shows a red `ERR` badge instead.
 
 Badge feedback is tied to the active tab when Chrome provides a valid website tab. Unsupported pages such as `chrome://` pages, extension pages, or other internal browser pages may show `ERR` because there is no normal website origin to clear.
 
@@ -53,9 +53,11 @@ During clearing, the extension action is temporarily disabled only for the confi
 - Added Manifest V3 support for Chrome.
 - Added two-click confirmation before clearing site data.
 - Binds confirmation to the original tab and site origin to avoid clearing a different site after switching tabs.
+- Uses the tab provided by Chrome for the extension click instead of querying the active tab again.
 - Tracks running clears per tab to block duplicate clears without blocking unrelated tabs.
 - Prevents older badge timers from clearing newer confirmation or result badges.
 - Uses neutral, green, and red badge colors for confirmation, success, and errors.
+- Shows `CLR` while Chrome processes the clearing request.
 - Temporarily disables the extension action only for the confirmed tab during clearing.
 - Clears cookies for the broader registrable domain where Chrome's cookie scoping applies.
 - Clears local storage, IndexedDB, WebSQL, file systems, cache, CacheStorage, and service workers for the active site origin.
