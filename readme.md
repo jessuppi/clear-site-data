@@ -36,6 +36,8 @@ This extension is not a VPN, anonymity tool, anti-fingerprinting system, or guar
 
 Clear Site Data shows `OK` only after Chrome reports that the clearing request completed. If the active page is unsupported or Chrome cannot complete the clearing request, the extension shows `ERR` instead.
 
+Badge feedback is tied to the active tab when Chrome provides a valid website tab. Unsupported pages such as `chrome://` pages, extension pages, or other internal browser pages may show `ERR` because there is no normal website origin to clear.
+
 ## Click guarding
 
 The two-click confirmation is bound to the tab and site origin from the first click. If you switch tabs or sites before confirming, the old confirmation is canceled and the new active site must be confirmed separately.
