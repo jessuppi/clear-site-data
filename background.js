@@ -1,3 +1,8 @@
+// log non-fatal extension errors for debugging
+function logWarning(message, error) {
+  console.warn(`Clear Site Data: ${message}`, error);
+}
+
 // get a validated http or https tab from the clicked action tab
 function getClickedTab(tab) {
   if (!tab || !tab.url || !Number.isInteger(tab.id)) return null;
@@ -8,8 +13,9 @@ function getClickedTab(tab) {
     if (url.protocol === "http:" || url.protocol === "https:") {
       return { tab, url };
     }
-  } catch {
+  } catch (error) {
     // ignore invalid or internal chrome urls
+    logWarning("invalid tab url", error);
   }
 
   return null;
@@ -99,12 +105,18 @@ async function flashBadge(text, ms = 1200, tabId, color = BADGE_COLOR_DEFAULT) {
     const key = getBadgeTimerKey(tabId);
     const timer = setTimeout(() => {
       badgeTimers.delete(key);
-      setBadgeText("", tabId).catch(() => {});
-      setBadgeColor(BADGE_COLOR_DEFAULT, tabId).catch(() => {});
+      setBadgeText("", tabId).catch((error) => {
+        logWarning("failed to clear badge text", error);
+      });
+      setBadgeColor(BADGE_COLOR_DEFAULT, tabId).catch((error) => {
+        logWarning("failed to reset badge color", error);
+      });
     }, ms);
 
     badgeTimers.set(key, timer);
-  } catch {}
+  } catch (error) {
+    logWarning("failed to show badge", error);
+  }
 }
 
 // prevent overlapping clears on the same tab
@@ -128,7 +140,9 @@ async function cancelConfirmation() {
   if (Number.isInteger(tabId)) {
     try {
       await clearBadge(tabId);
-    } catch {}
+    } catch (error) {
+      logWarning("failed to clear confirmation badge", error);
+    }
   }
 }
 
@@ -142,7 +156,9 @@ async function armConfirmation(active) {
 
   // auto-cancel after 3 seconds
   confirmTimer = setTimeout(() => {
-    cancelConfirmation().catch(() => {});
+    cancelConfirmation().catch((error) => {
+      logWarning("failed to cancel confirmation", error);
+    });
   }, 3000);
 }
 
@@ -172,7 +188,7 @@ chrome.action.onClicked.addListener(async (tab) => {
       return;
     }
 
-    // second click on the same tab and origin: proceed
+    // second click on the same tab and origin: claim the tab before awaiting cleanup
     runningTabs.add(tabId);
 
     try {
@@ -187,16 +203,20 @@ chrome.action.onClicked.addListener(async (tab) => {
 
       // show badge feedback after clearing
       await flashBadge("OK", 1200, tabId, BADGE_COLOR_SUCCESS);
-    } catch {
+    } catch (error) {
       // show failure if chrome could not clear site data
+      logWarning("failed to clear site data", error);
       await flashBadge("ERR", 1200, tabId, BADGE_COLOR_ERROR);
     } finally {
       // re-enable the confirmed tab after completion
-      await chrome.action.enable(tabId).catch(() => {});
+      await chrome.action.enable(tabId).catch((error) => {
+        logWarning("failed to re-enable action", error);
+      });
       runningTabs.delete(tabId);
     }
-  } catch {
+  } catch (error) {
     // reset state and show failure if an unexpected click error occurs
+    logWarning("unexpected click error", error);
     await cancelConfirmation();
     await flashBadge("ERR", 1200, undefined, BADGE_COLOR_ERROR);
   }
