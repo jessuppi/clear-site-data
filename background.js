@@ -53,19 +53,6 @@ async function flashBadge(text, ms = 1200) {
   } catch {}
 }
 
-// briefly flash the extension icon to confirm action
-async function flashIcon(ms = 800) {
-  try {
-    // switch to the active icon
-    await chrome.action.setIcon({ path: "icon128_active.png" });
-
-    // revert back after delay
-    setTimeout(() => {
-      chrome.action.setIcon({ path: "icon128.png" }).catch(() => {});
-    }, ms);
-  } catch {}
-}
-
 // prevent overlapping runs on rapid clicks
 let isRunning = false;
 
@@ -116,9 +103,8 @@ chrome.action.onClicked.addListener(async () => {
     const { url } = active;
     await removeSiteData(url.origin);
 
-    // show feedback and flash the icon
+    // show badge feedback after clearing
     await flashBadge("OK");
-    await flashIcon();
   } finally {
     // re-enable icon after completion
     chrome.action.enable();
