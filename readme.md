@@ -50,6 +50,13 @@ During clearing, the extension action is temporarily disabled only for the confi
 
 Clear Site Data does not collect, store, transmit, sell, or share user data. All clearing happens locally through Chrome's built-in `chrome.browsingData.remove()` API after the user clicks the extension.
 
+## Permissions
+
+Clear Site Data uses only the permissions needed for its single purpose:
+
+- `browsingData`: clears cookies, cache, local storage, IndexedDB, CacheStorage, service workers, WebSQL, and file system storage for the current site.
+- `activeTab`: reads the active tab's current website origin only after the user clicks the extension icon.
+
 ## Changelog
 
 ### 1.0.0
@@ -58,6 +65,7 @@ Clear Site Data does not collect, store, transmit, sell, or share user data. All
 - Added two-click confirmation before clearing site data.
 - Binds confirmation to the original tab and site origin to avoid clearing a different site after switching tabs.
 - Documents that pending confirmation is single-site at a time.
+- Documents the minimal `browsingData` and `activeTab` permission usage.
 - Uses the tab provided by Chrome for the extension click instead of querying the active tab again.
 - Claims the confirmed tab before async cleanup to avoid duplicate clear races.
 - Tracks running clears per tab to block duplicate clears without blocking unrelated tabs.
