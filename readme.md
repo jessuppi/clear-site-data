@@ -22,6 +22,8 @@ It is designed to clear current-site data types that Chrome supports through ori
 
 These local data types are commonly used for logins, sessions, cached files, offline app data, test states, and tracking identifiers. Clearing them can help reset logins, remove local site identifiers, clear broken test states, and show how a site behaves as a fresh visitor.
 
+## What it does not clear
+
 Clear Site Data does not currently clear `sessionStorage`, because Chrome's `browsingData` API does not expose it as an origin-scoped removal type. Support for clearing `sessionStorage` may be added later if it can be done cleanly without making the extension feel invasive.
 
 It also does not clear browser-wide data such as saved passwords, browsing history, download history, autofill data, extension data, or fingerprinting/server-side identifiers.
