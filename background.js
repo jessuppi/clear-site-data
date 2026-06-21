@@ -24,24 +24,22 @@ chrome.runtime.onInstalled.addListener(() => {
 
 // clear all persistent site data for this origin
 async function removeSiteData(origin) {
-  try {
-    await chrome.browsingData.remove(
-      { origins: [origin], since: 0 },
-      {
-        // cookies and storage
-        cookies: true,
-        localStorage: true,
-        indexedDB: true,
-        webSQL: true,
-        fileSystems: true,
+  await chrome.browsingData.remove(
+    { origins: [origin], since: 0 },
+    {
+      // cookies and storage
+      cookies: true,
+      localStorage: true,
+      indexedDB: true,
+      webSQL: true,
+      fileSystems: true,
 
-        // caches and workers
-        cache: true,
-        cacheStorage: true,
-        serviceWorkers: true
-      }
-    );
-  } catch {}
+      // caches and workers
+      cache: true,
+      cacheStorage: true,
+      serviceWorkers: true
+    }
+  );
 }
 
 // show a short badge message on the extension icon
@@ -105,6 +103,9 @@ chrome.action.onClicked.addListener(async () => {
 
     // show badge feedback after clearing
     await flashBadge("OK");
+  } catch {
+    // show failure if chrome could not clear site data
+    await flashBadge("ERR");
   } finally {
     // re-enable icon after completion
     chrome.action.enable();
