@@ -10,15 +10,17 @@ Click the extension icon once to show `OK?`, then click it again within 3 second
 
 Clear Site Data uses Chrome's built-in `chrome.browsingData.remove()` API with the active tab's site origin.
 
-It is designed to clear current-site data types that Chrome supports through origin-scoped browsing data removal:
+It is designed to clear current-site data types that Chrome supports through site-specific browsing data removal:
 
-- Cookies
-- Local storage (`localStorage`)
-- IndexedDB
-- CacheStorage
-- Service workers
-- Site cache
-- WebSQL and file system storage where still supported by Chrome
+- Cookies for the broader registrable domain where Chrome's cookie scoping applies
+- Local storage (`localStorage`) for the active site origin
+- IndexedDB for the active site origin
+- CacheStorage for the active site origin
+- Service workers for the active site origin
+- Site cache for the active site origin
+- WebSQL and file system storage for the active site origin where still supported by Chrome
+
+Cookies are cleared more broadly because login and session cookies are often shared across subdomains. Other storage and cache types stay origin-scoped, meaning scheme, host, and port, so clearing one site does not intentionally wipe unrelated subdomains or schemes.
 
 These local data types are commonly used for logins, sessions, cached files, offline app data, test states, and tracking identifiers. Clearing them can help reset logins, remove local site identifiers, clear broken test states, and show how a site behaves as a fresh visitor.
 
@@ -36,7 +38,8 @@ This extension is not a VPN, anonymity tool, anti-fingerprinting system, or guar
 
 - Added Manifest V3 support for Chrome.
 - Added two-click confirmation before clearing site data.
-- Clears cookies, local storage, IndexedDB, WebSQL, file systems, cache, CacheStorage, and service workers for the current site origin.
+- Clears cookies for the broader registrable domain where Chrome's cookie scoping applies.
+- Clears local storage, IndexedDB, WebSQL, file systems, cache, CacheStorage, and service workers for the active site origin.
 - Uses Chrome's built-in `chrome.browsingData.remove()` API.
 - Uses minimal extension permissions with `browsingData` and `activeTab`.
 - Uses one extension icon with badge-only feedback after confirmation, success, or unsupported pages.
