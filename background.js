@@ -1,11 +1,9 @@
-// get the active http or https tab and its parsed url
-async function getActiveTab() {
-  // find the active tab in the current window
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+// get a validated http or https tab from the clicked action tab
+function getClickedTab(tab) {
   if (!tab || !tab.url || !Number.isInteger(tab.id)) return null;
 
   try {
-    // parse the tab url and ensure it uses http or https
+    // parse the clicked tab url and ensure it uses http or https
     const url = new URL(tab.url);
     if (url.protocol === "http:" || url.protocol === "https:") {
       return { tab, url };
@@ -134,7 +132,7 @@ async function cancelConfirmation() {
   }
 }
 
-// arm confirmation for the active tab and origin
+// arm confirmation for the clicked tab and origin
 async function armConfirmation(active) {
   const tabId = active.tab.id;
   const origin = active.url.origin;
@@ -149,10 +147,10 @@ async function armConfirmation(active) {
 }
 
 // handle click on extension icon
-chrome.action.onClicked.addListener(async () => {
+chrome.action.onClicked.addListener(async (tab) => {
   try {
-    // get the active browser tab before arming or clearing
-    const active = await getActiveTab();
+    // use the tab passed by chrome for this exact click
+    const active = getClickedTab(tab);
     if (!active) {
       await cancelConfirmation();
       await flashBadge("ERR", 1200, undefined, BADGE_COLOR_ERROR);
@@ -175,15 +173,16 @@ chrome.action.onClicked.addListener(async () => {
     }
 
     // second click on the same tab and origin: proceed
-    await cancelConfirmation();
-
-    // disable the confirmed tab to prevent duplicate clears
     runningTabs.add(tabId);
 
     try {
+      await cancelConfirmation();
+      await showBadge("CLR", tabId);
+
+      // disable the confirmed tab to prevent duplicate clears
       await chrome.action.disable(tabId);
 
-      // clear all site data for the active origin
+      // clear all site data for the confirmed origin
       await removeSiteData(origin);
 
       // show badge feedback after clearing
