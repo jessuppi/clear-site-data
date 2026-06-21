@@ -58,8 +58,8 @@ async function flashBadge(text, ms = 1200, tabId) {
   } catch {}
 }
 
-// prevent overlapping runs on rapid clicks
-let isRunning = false;
+// prevent overlapping clears on the same tab
+const runningTabs = new Set();
 
 // track the tab and origin waiting for confirmation
 let armedClear = null;
@@ -99,9 +99,6 @@ async function armConfirmation(active) {
 
 // handle click on extension icon
 chrome.action.onClicked.addListener(async () => {
-  // ignore if a clear is already running
-  if (isRunning) return;
-
   try {
     // get the active browser tab before arming or clearing
     const active = await getActiveTab();
@@ -113,6 +110,10 @@ chrome.action.onClicked.addListener(async () => {
 
     const tabId = active.tab.id;
     const origin = active.url.origin;
+
+    // ignore duplicate clicks while this tab is already clearing
+    if (runningTabs.has(tabId)) return;
+
     const isConfirmed = armedClear?.tabId === tabId && armedClear.origin === origin;
 
     // first click or changed tab/site: arm this exact tab and origin
@@ -126,7 +127,7 @@ chrome.action.onClicked.addListener(async () => {
     await cancelConfirmation();
 
     // disable the confirmed tab to prevent duplicate clears
-    isRunning = true;
+    runningTabs.add(tabId);
 
     try {
       await chrome.action.disable(tabId);
@@ -142,7 +143,7 @@ chrome.action.onClicked.addListener(async () => {
     } finally {
       // re-enable the confirmed tab after completion
       await chrome.action.enable(tabId).catch(() => {});
-      isRunning = false;
+      runningTabs.delete(tabId);
     }
   } catch {
     // reset state and show failure if an unexpected click error occurs
