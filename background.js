@@ -38,10 +38,7 @@ async function removeSiteData(origin) {
         // caches and workers
         cache: true,
         cacheStorage: true,
-        serviceWorkers: true,
-
-        // legacy plugin storage (kept for completeness)
-        pluginData: true
+        serviceWorkers: true
       }
     );
   } catch {}
@@ -59,7 +56,7 @@ async function flashBadge(text, ms = 1200) {
 // briefly flash the extension icon to confirm action
 async function flashIcon(ms = 800) {
   try {
-    // switch to the "active" icon
+    // switch to the active icon
     await chrome.action.setIcon({ path: "icon128_active.png" });
 
     // revert back after delay
@@ -76,7 +73,7 @@ let isRunning = false;
 let confirmArmed = false;
 let confirmTimer = null;
 
-// handle click on extension icon (two-click confirm)
+// handle click on extension icon
 chrome.action.onClicked.addListener(async () => {
   // ignore if a clear is already running
   if (isRunning) return;
