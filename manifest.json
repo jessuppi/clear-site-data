@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Clear Site Data",
   "version": "1.0.0",
-  "description": "Quickly clear all data for the current site with a single click using this simple tool to reset sessions and remove tracking storage.",
+  "description": "Clear data for the current site with a two-click confirmation to reset sessions and remove local tracking storage.",
   "permissions": [
     "browsingData",
     "activeTab"
