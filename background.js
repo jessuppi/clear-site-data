@@ -88,8 +88,8 @@ async function armConfirmation(active) {
   const tabId = active.tab.id;
   const origin = active.url.origin;
 
-  armedClear = { tabId, origin };
   await setBadgeText("OK?", tabId);
+  armedClear = { tabId, origin };
 
   // auto-cancel after 3 seconds
   confirmTimer = setTimeout(() => {
@@ -127,9 +127,10 @@ chrome.action.onClicked.addListener(async () => {
 
     // disable icon to prevent multiple clicks during clear
     isRunning = true;
-    chrome.action.disable();
 
     try {
+      await chrome.action.disable();
+
       // clear all site data for the active origin
       await removeSiteData(origin);
 
@@ -140,11 +141,12 @@ chrome.action.onClicked.addListener(async () => {
       await flashBadge("ERR", 1200, tabId);
     } finally {
       // re-enable icon after completion
-      chrome.action.enable();
+      await chrome.action.enable().catch(() => {});
       isRunning = false;
     }
   } catch {
-    // show failure if tab lookup or confirmation state fails
+    // reset state and show failure if an unexpected click error occurs
+    await cancelConfirmation();
     await flashBadge("ERR");
   }
 });
