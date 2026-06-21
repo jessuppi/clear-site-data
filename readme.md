@@ -36,12 +36,17 @@ This extension is not a VPN, anonymity tool, anti-fingerprinting system, or guar
 
 Clear Site Data shows `OK` only after Chrome reports that the clearing request completed. If the active page is unsupported or Chrome cannot complete the clearing request, the extension shows `ERR` instead.
 
+## Click guarding
+
+The two-click confirmation is bound to the tab and site origin from the first click. If you switch tabs or sites before confirming, the old confirmation is canceled and the new active site must be confirmed separately.
+
 ## Changelog
 
 ### 1.0.0
 
 - Added Manifest V3 support for Chrome.
 - Added two-click confirmation before clearing site data.
+- Binds confirmation to the original tab and site origin to avoid clearing a different site after switching tabs.
 - Clears cookies for the broader registrable domain where Chrome's cookie scoping applies.
 - Clears local storage, IndexedDB, WebSQL, file systems, cache, CacheStorage, and service workers for the active site origin.
 - Uses Chrome's built-in `chrome.browsingData.remove()` API.
