@@ -42,6 +42,8 @@ Badge feedback is tied to the active tab when Chrome provides a valid website ta
 
 The two-click confirmation is bound to the tab and site origin from the first click. If you switch tabs or sites before confirming, the old confirmation is canceled and the new active site must be confirmed separately.
 
+During clearing, the extension action is temporarily disabled only for the confirmed tab to prevent duplicate clears while keeping the behavior tied to that tab.
+
 ## Changelog
 
 ### 1.0.0
@@ -49,6 +51,7 @@ The two-click confirmation is bound to the tab and site origin from the first cl
 - Added Manifest V3 support for Chrome.
 - Added two-click confirmation before clearing site data.
 - Binds confirmation to the original tab and site origin to avoid clearing a different site after switching tabs.
+- Temporarily disables the extension action only for the confirmed tab during clearing.
 - Clears cookies for the broader registrable domain where Chrome's cookie scoping applies.
 - Clears local storage, IndexedDB, WebSQL, file systems, cache, CacheStorage, and service workers for the active site origin.
 - Uses Chrome's built-in `chrome.browsingData.remove()` API.
