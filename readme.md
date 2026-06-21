@@ -34,11 +34,11 @@ This extension is not a VPN, anonymity tool, anti-fingerprinting system, or guar
 
 ## Error handling
 
-Clear Site Data shows `OK` only after Chrome reports that the clearing request completed. If the active page is unsupported or Chrome cannot complete the clearing request, the extension shows `ERR` instead.
+Clear Site Data shows a green `OK` badge only after Chrome reports that the clearing request completed. If the active page is unsupported or Chrome cannot complete the clearing request, the extension shows a red `ERR` badge instead.
 
 Badge feedback is tied to the active tab when Chrome provides a valid website tab. Unsupported pages such as `chrome://` pages, extension pages, or other internal browser pages may show `ERR` because there is no normal website origin to clear.
 
-Badge cleanup is also tracked per tab, so newer confirmation or result badges are not cleared by older feedback timers.
+Badge cleanup is also tracked per tab, so newer confirmation or result badges are not cleared by older feedback timers. Confirmation uses a neutral `OK?` badge.
 
 ## Click guarding
 
@@ -55,6 +55,7 @@ During clearing, the extension action is temporarily disabled only for the confi
 - Binds confirmation to the original tab and site origin to avoid clearing a different site after switching tabs.
 - Tracks running clears per tab to block duplicate clears without blocking unrelated tabs.
 - Prevents older badge timers from clearing newer confirmation or result badges.
+- Uses neutral, green, and red badge colors for confirmation, success, and errors.
 - Temporarily disables the extension action only for the confirmed tab during clearing.
 - Clears cookies for the broader registrable domain where Chrome's cookie scoping applies.
 - Clears local storage, IndexedDB, WebSQL, file systems, cache, CacheStorage, and service workers for the active site origin.
