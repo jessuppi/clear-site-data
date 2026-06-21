@@ -66,6 +66,7 @@ Clear Site Data uses only the permissions needed for its single purpose:
 - Binds confirmation to the original tab and site origin to avoid clearing a different site after switching tabs.
 - Documents that pending confirmation is single-site at a time.
 - Documents the minimal `browsingData` and `activeTab` permission usage.
+- Refines the extension description to mention cookies, cache, and storage directly.
 - Uses the tab provided by Chrome for the extension click instead of querying the active tab again.
 - Claims the confirmed tab before async cleanup to avoid duplicate clear races.
 - Tracks running clears per tab to block duplicate clears without blocking unrelated tabs.
