@@ -2,6 +2,7 @@
   "manifest_version": 3,
   "name": "Clear Site Data",
   "version": "1.0.0",
+  "minimum_chrome_version": "96",
   "description": "Clear data for the current site with a two-click confirmation to reset sessions and remove local tracking storage.",
   "permissions": [
     "browsingData",
