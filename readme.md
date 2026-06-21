@@ -32,6 +32,10 @@ It also does not clear browser-wide data such as saved passwords, browsing histo
 
 This extension is not a VPN, anonymity tool, anti-fingerprinting system, or guarantee against all tracking. Sites may still recognize visitors through accounts, IP addresses, browser fingerprinting, server-side records, or other signals. The goal is simple local site cleanup, not identity hiding.
 
+## Error handling
+
+Clear Site Data shows `OK` only after Chrome reports that the clearing request completed. If the active page is unsupported or Chrome cannot complete the clearing request, the extension shows `ERR` instead.
+
 ## Changelog
 
 ### 1.0.0
@@ -43,4 +47,5 @@ This extension is not a VPN, anonymity tool, anti-fingerprinting system, or guar
 - Uses Chrome's built-in `chrome.browsingData.remove()` API.
 - Uses minimal extension permissions with `browsingData` and `activeTab`.
 - Uses one extension icon with badge-only feedback after confirmation, success, or unsupported pages.
+- Shows `ERR` when clearing is unsupported or fails.
 - Supports split incognito mode.
