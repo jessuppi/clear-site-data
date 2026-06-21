@@ -187,12 +187,14 @@ async function armConfirmation(active) {
 
 // handle click on extension icon
 chrome.action.onClicked.addListener(async (tab) => {
+  const clickedTabId = Number.isInteger(tab?.id) ? tab.id : undefined;
+
   try {
     // use the tab passed by chrome for this exact click
     const active = getClickedTab(tab);
     if (!active) {
       await cancelConfirmation();
-      await flashBadge("ERR", 1200, undefined, BADGE_COLOR_ERROR);
+      await flashBadge("ERR", 1200, clickedTabId, BADGE_COLOR_ERROR);
       return;
     }
 
@@ -241,6 +243,6 @@ chrome.action.onClicked.addListener(async (tab) => {
     // reset state and show failure if an unexpected click error occurs
     logWarning("unexpected click error", error);
     await cancelConfirmation();
-    await flashBadge("ERR", 1200, undefined, BADGE_COLOR_ERROR);
+    await flashBadge("ERR", 1200, clickedTabId, BADGE_COLOR_ERROR);
   }
 });
