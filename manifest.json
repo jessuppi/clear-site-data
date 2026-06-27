@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Clear Site Data",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "minimum_chrome_version": "96",
   "description": "Clear cookies, cache, and storage for the current site with a two-click confirmation.",
   "permissions": [
