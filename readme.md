@@ -61,7 +61,7 @@ Clear Site Data uses only the permissions needed for its single purpose:
 
 ### 1.1.0
 
-- Explicitly clears both normal website origin data and protected web origin data for the clicked site.
+- Explicitly keeps normal website origin clearing enabled without clearing protected hosted app data.
 - Clears related bare/www and http/https origins for normal domain names.
 - Keeps localhost, IP addresses, and custom-port origins scoped to the exact clicked origin.
 - Improves cleanup for sites that split storage between `example.com` and `www.example.com`.
