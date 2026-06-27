@@ -30,9 +30,28 @@ chrome.runtime.onInstalled.addListener(() => {
   chrome.action.setBadgeBackgroundColor({ color: BADGE_COLOR_DEFAULT });
 });
 
+// check whether a hostname is safe for bare/www related-origin expansion
+function canExpandRelatedOrigins(url) {
+  const hostname = url.hostname.toLowerCase();
+
+  return (
+    !url.port &&
+    hostname.includes(".") &&
+    !hostname.includes(":") &&
+    !/^\d{1,3}(\.\d{1,3}){3}$/.test(hostname) &&
+    hostname !== "localhost" &&
+    !hostname.endsWith(".localhost")
+  );
+}
+
 // get the clicked origin plus bare/www and http/https related origins
 function getRelatedOrigins(origin) {
   const url = new URL(origin);
+
+  if (!canExpandRelatedOrigins(url)) {
+    return [origin];
+  }
+
   const hostname = url.hostname.toLowerCase();
   const hosts = new Set([hostname]);
 
