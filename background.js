@@ -30,11 +30,34 @@ chrome.runtime.onInstalled.addListener(() => {
   chrome.action.setBadgeBackgroundColor({ color: BADGE_COLOR_DEFAULT });
 });
 
-// clear all persistent site data for this origin
+// get the clicked origin plus bare/www and http/https related origins
+function getRelatedOrigins(origin) {
+  const url = new URL(origin);
+  const hostname = url.hostname.toLowerCase();
+  const hosts = new Set([hostname]);
+
+  if (hostname.startsWith("www.")) {
+    hosts.add(hostname.slice(4));
+  } else {
+    hosts.add(`www.${hostname}`);
+  }
+
+  const origins = new Set();
+
+  for (const protocol of ["https:", "http:"]) {
+    for (const host of hosts) {
+      origins.add(`${protocol}//${host}`);
+    }
+  }
+
+  return [...origins];
+}
+
+// clear all persistent site data for this origin and its bare/www sibling
 async function removeSiteData(origin) {
   await chrome.browsingData.remove(
     {
-      origins: [origin],
+      origins: getRelatedOrigins(origin),
       since: 0,
       originTypes: {
         unprotectedWeb: true,
