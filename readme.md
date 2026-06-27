@@ -8,19 +8,19 @@ Click the extension icon once to show `OK?`, then click it again within 3 second
 
 ## What it clears
 
-Clear Site Data uses Chrome's built-in `chrome.browsingData.remove()` API with the active tab's site origin.
+Clear Site Data uses Chrome's built-in `chrome.browsingData.remove()` API with the active tab's site origin and closely related bare/www plus http/https origins.
 
 It is designed to clear current-site data types that Chrome supports through site-specific browsing data removal:
 
 - Cookies for the broader registrable domain where Chrome's cookie scoping applies
-- Local storage (`localStorage`) for the active site origin
-- IndexedDB for the active site origin
-- CacheStorage for the active site origin
-- Service workers for the active site origin
-- Site cache for the active site origin
-- WebSQL and file system storage for the active site origin where still supported by Chrome
+- Local storage (`localStorage`) for the active site origin and its bare/www sibling origin
+- IndexedDB for the active site origin and its bare/www sibling origin
+- CacheStorage for the active site origin and its bare/www sibling origin
+- Service workers for the active site origin and its bare/www sibling origin
+- Site cache for the active site origin and its bare/www sibling origin
+- WebSQL and file system storage for the active site origin and its bare/www sibling origin where still supported by Chrome
 
-Cookies are cleared more broadly because login and session cookies are often shared across subdomains. Other storage and cache types stay origin-scoped, meaning scheme, host, and port, so clearing one site does not intentionally wipe unrelated subdomains or schemes.
+Cookies are cleared more broadly because login and session cookies are often shared across subdomains. Other storage and cache types are origin-scoped, so Clear Site Data also checks the active site's bare/www sibling and http/https variants without intentionally wiping unrelated subdomains.
 
 These local data types are commonly used for logins, sessions, cached files, offline app data, test states, and tracking identifiers. Clearing them can help reset logins, remove local site identifiers, clear broken test states, and show how a site behaves as a fresh visitor.
 
@@ -62,7 +62,9 @@ Clear Site Data uses only the permissions needed for its single purpose:
 ### 1.1.0
 
 - Explicitly clears both normal website origin data and protected web origin data for the clicked site.
-- Keeps clearing scoped to the confirmed origin without adding broader cookie or host permissions.
+- Clears related bare/www and http/https origins for the confirmed site.
+- Improves cleanup for sites that split storage between `example.com` and `www.example.com`.
+- Keeps clearing limited to Chrome's `browsingData` API without adding cookie or host permissions.
 
 ### 1.0.0
 
