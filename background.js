@@ -33,7 +33,14 @@ chrome.runtime.onInstalled.addListener(() => {
 // clear all persistent site data for this origin
 async function removeSiteData(origin) {
   await chrome.browsingData.remove(
-    { origins: [origin], since: 0 },
+    {
+      origins: [origin],
+      since: 0,
+      originTypes: {
+        unprotectedWeb: true,
+        protectedWeb: true
+      }
+    },
     {
       // cookies and storage
       cookies: true,
