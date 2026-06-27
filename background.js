@@ -79,8 +79,7 @@ async function removeSiteData(origin) {
       origins: getRelatedOrigins(origin),
       since: 0,
       originTypes: {
-        unprotectedWeb: true,
-        protectedWeb: true
+        unprotectedWeb: true
       }
     },
     {
