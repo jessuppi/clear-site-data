@@ -59,6 +59,11 @@ Clear Site Data uses only the permissions needed for its single purpose:
 
 ## Changelog
 
+### 1.1.0
+
+- Explicitly clears both normal website origin data and protected web origin data for the clicked site.
+- Keeps clearing scoped to the confirmed origin without adding broader cookie or host permissions.
+
 ### 1.0.0
 
 - Added Manifest V3 support for Chrome.
