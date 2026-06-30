@@ -28,9 +28,13 @@ These local data types are commonly used for logins, sessions, cached files, off
 
 Clear Site Data does not currently clear `sessionStorage`, because Chrome's `browsingData` API does not expose it as an origin-scoped removal type. Support for clearing `sessionStorage` may be added later if it can be done cleanly without making the extension feel invasive.
 
+It also does not clear unrelated third-party cookie domains loaded by the current site. This can matter on a small percentage of websites that use aggressive tracking, anti-adblock, or embedded third-party login/session tricks. For example, if a website depends on a third-party cookie from a domain such as `btloader.com`, clearing the current site's data may not remove that external cookie.
+
+Clear Site Data intentionally avoids this for now because removing unrelated third-party cookies would require broader cookie access and host permissions. That would make the extension more invasive, harder to explain, and more likely to clear data the user did not expect. The current goal is simple current-site cleanup, not browser-wide cookie management.
+
 It also does not clear browser-wide data such as saved passwords, browsing history, download history, autofill data, extension data, or fingerprinting/server-side identifiers.
 
-This extension is not a VPN, anonymity tool, anti-fingerprinting system, or guarantee against all tracking. Sites may still recognize visitors through accounts, IP addresses, browser fingerprinting, server-side records, or other signals. The goal is simple local site cleanup, not identity hiding.
+This extension is not a VPN, anonymity tool, anti-fingerprinting system, or guarantee against all tracking. Sites may still recognize visitors through accounts, IP addresses, browser fingerprinting, server-side records, third-party cookies, or other signals. The goal is simple local site cleanup, not identity hiding.
 
 ## Error handling
 
@@ -57,6 +61,8 @@ Clear Site Data uses only the permissions needed for its single purpose:
 - `browsingData`: clears cookies, cache, local storage, IndexedDB, CacheStorage, service workers, WebSQL, and file system storage for the current site.
 - `activeTab`: reads the active tab's current website origin only after the user clicks the extension icon.
 
+Clear Site Data intentionally does not request the `cookies` permission or broad host permissions for third-party cookie domains.
+
 ## Changelog
 
 ### 1.1.0
@@ -66,6 +72,7 @@ Clear Site Data uses only the permissions needed for its single purpose:
 - Keeps localhost, IP addresses, and custom-port origins scoped to the exact clicked origin.
 - Improves cleanup for sites that split storage between `example.com` and `www.example.com`.
 - Keeps clearing limited to Chrome's `browsingData` API without adding cookie or host permissions.
+- Documents why unrelated third-party cookie domains are not cleared for now.
 
 ### 1.0.0
 
